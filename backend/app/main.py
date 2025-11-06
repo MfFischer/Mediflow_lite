@@ -7,7 +7,7 @@ import time
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results, hospital_settings
+from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results, hospital_settings, users
 
 # Configure logging
 logging.basicConfig(
@@ -102,6 +102,7 @@ def read_root():
 
 # Include routers
 app.include_router(auth.router, prefix=f"{settings.api_v1_prefix}/auth", tags=["Authentication"])
+app.include_router(users.router, prefix=f"{settings.api_v1_prefix}/users", tags=["User Management"])
 app.include_router(patients.router, prefix=f"{settings.api_v1_prefix}/patients", tags=["Patients"])
 app.include_router(appointments.router, prefix=f"{settings.api_v1_prefix}/appointments", tags=["Appointments"])
 app.include_router(billing.router, prefix=f"{settings.api_v1_prefix}/billing", tags=["Billing"])
