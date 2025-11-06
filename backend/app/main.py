@@ -7,7 +7,7 @@ import time
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results
+from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results, hospital_settings
 
 # Configure logging
 logging.basicConfig(
@@ -107,5 +107,6 @@ app.include_router(appointments.router, prefix=f"{settings.api_v1_prefix}/appoin
 app.include_router(billing.router, prefix=f"{settings.api_v1_prefix}/billing", tags=["Billing"])
 app.include_router(prescriptions.router, prefix=f"{settings.api_v1_prefix}/prescriptions", tags=["E-Prescriptions"])
 app.include_router(lab_results.router, prefix=f"{settings.api_v1_prefix}/lab-results", tags=["Lab Results"])
+app.include_router(hospital_settings.router, prefix=f"{settings.api_v1_prefix}/hospital-settings", tags=["Hospital Settings"])
 app.include_router(ai.router, prefix=f"{settings.api_v1_prefix}/ai", tags=["AI"])
 app.include_router(gdpr.router, prefix=f"{settings.api_v1_prefix}/gdpr", tags=["GDPR Compliance"])
