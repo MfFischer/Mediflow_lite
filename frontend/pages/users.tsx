@@ -30,17 +30,17 @@ export default function Users() {
   })
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('access_token')
     if (!token) {
       router.push('/login')
       return
     }
     fetchUsers()
-  }, [])
+  }, [router])
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       const response = await axios.get('http://localhost:8000/api/v1/users/', {
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -55,9 +55,9 @@ export default function Users() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       
       if (editingUser) {
         // Update existing user
@@ -123,9 +123,9 @@ export default function Users() {
     if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
       return
     }
-    
+
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       await axios.delete(`http://localhost:8000/api/v1/users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       })

@@ -28,18 +28,18 @@ export default function HospitalSettings() {
   })
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('access_token')
     if (!token) {
       router.push('/login')
       return
     }
     fetchSettings()
-  }, [])
+  }, [router])
 
   const fetchSettings = async () => {
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       const response = await axios.get('http://localhost:8000/api/v1/hospital-settings/', {
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -75,7 +75,7 @@ export default function HospitalSettings() {
     setSuccess('')
 
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('access_token')
       await axios.put(
         `http://localhost:8000/api/v1/hospital-settings/${settingsId}`,
         formData,
