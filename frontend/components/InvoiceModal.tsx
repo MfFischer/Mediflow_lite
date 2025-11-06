@@ -10,8 +10,11 @@ interface InvoiceModalProps {
 
 interface InvoiceItem {
   description: string
+  category: string
   quantity: number
   unit_price: number
+  doctor_name?: string
+  doctor_license?: string
 }
 
 export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: InvoiceModalProps) {
@@ -21,11 +24,14 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
     due_date: '',
     tax_rate: 0,
     discount_amount: 0,
+    philhealth_coverage: 0,
+    hmo_coverage: 0,
+    senior_pwd_discount: 0,
     notes: '',
     status: 'pending'
   })
   const [items, setItems] = useState<InvoiceItem[]>([
-    { description: '', quantity: 1, unit_price: 0 }
+    { description: '', category: 'other', quantity: 1, unit_price: 0 }
   ])
   const [patients, setPatients] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
@@ -86,7 +92,7 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
   }
 
   const addItem = () => {
-    setItems([...items, { description: '', quantity: 1, unit_price: 0 }])
+    setItems([...items, { description: '', category: 'other', quantity: 1, unit_price: 0 }])
   }
 
   const removeItem = (index: number) => {
@@ -109,6 +115,11 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
 
   const calculateTotal = () => {
     return calculateSubtotal() + calculateTax() - formData.discount_amount
+  }
+
+  const calculatePatientBalance = () => {
+    const total = calculateTotal()
+    return total - formData.philhealth_coverage - formData.hmo_coverage - formData.senior_pwd_discount
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -235,8 +246,26 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
                     </button>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                      <select
+                        required
+                        value={item.category}
+                        onChange={(e) => updateItem(index, 'category', e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="professional_fee">Professional Fee</option>
+                        <option value="laboratory">Laboratory</option>
+                        <option value="medication">Medication</option>
+                        <option value="room_charge">Room Charge</option>
+                        <option value="procedure">Procedure</option>
+                        <option value="supplies">Supplies</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
                       <input
                         type="text"
@@ -247,7 +276,35 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
                         placeholder="e.g., Consultation fee"
                       />
                     </div>
+                  </div>
 
+                  {item.category === 'professional_fee' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Doctor Name</label>
+                        <input
+                          type="text"
+                          value={item.doctor_name || ''}
+                          onChange={(e) => updateItem(index, 'doctor_name', e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Dr. Juan Dela Cruz"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">PRC License Number</label>
+                        <input
+                          type="text"
+                          value={item.doctor_license || ''}
+                          onChange={(e) => updateItem(index, 'doctor_license', e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="PRC License #"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
                       <input
@@ -261,7 +318,7 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Unit Price ($) *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Unit Price (₱) *</label>
                       <input
                         type="number"
                         required
@@ -272,10 +329,13 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
                         className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                  </div>
 
-                  <div className="mt-2 text-right text-sm text-gray-600">
-                    Amount: <span className="font-semibold">${(item.quantity * item.unit_price).toFixed(2)}</span>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Amount</label>
+                      <div className="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-700 font-semibold">
+                        ₱{(item.quantity * item.unit_price).toFixed(2)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -299,7 +359,7 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Discount ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Discount (₱)</label>
                 <input
                   type="number"
                   min="0"
@@ -311,22 +371,82 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
               </div>
             </div>
 
+            {/* Philippine Insurance Coverage */}
+            <div className="border-t border-gray-300 pt-4 mb-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs mr-2">🇵🇭</span>
+                Insurance Coverage
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">PhilHealth (₱)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.philhealth_coverage}
+                    onChange={(e) => setFormData({ ...formData, philhealth_coverage: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="PhilHealth coverage"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">HMO Coverage (₱)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.hmo_coverage}
+                    onChange={(e) => setFormData({ ...formData, hmo_coverage: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="HMO coverage"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Senior/PWD Discount (₱)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.senior_pwd_discount}
+                    onChange={(e) => setFormData({ ...formData, senior_pwd_discount: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="20% discount"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-2 text-right">
               <div className="flex justify-between text-gray-700">
                 <span>Subtotal:</span>
-                <span className="font-semibold">${calculateSubtotal().toFixed(2)}</span>
+                <span className="font-semibold">₱{calculateSubtotal().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-700">
                 <span>Tax ({formData.tax_rate}%):</span>
-                <span className="font-semibold">${calculateTax().toFixed(2)}</span>
+                <span className="font-semibold">₱{calculateTax().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-700">
                 <span>Discount:</span>
-                <span className="font-semibold">-${formData.discount_amount.toFixed(2)}</span>
+                <span className="font-semibold">-₱{formData.discount_amount.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t border-gray-300">
-                <span>Total:</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+              <div className="flex justify-between text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+                <span>PhilHealth Coverage:</span>
+                <span className="font-semibold">-₱{formData.philhealth_coverage.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+                <span>HMO Coverage:</span>
+                <span className="font-semibold">-₱{formData.hmo_coverage.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+                <span>Senior/PWD Discount:</span>
+                <span className="font-semibold">-₱{formData.senior_pwd_discount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-xl font-bold text-blue-900 pt-2 border-t-2 border-blue-300 bg-blue-50 px-3 py-2 rounded-lg">
+                <span>Patient Balance:</span>
+                <span>₱{calculatePatientBalance().toFixed(2)}</span>
               </div>
             </div>
           </div>
