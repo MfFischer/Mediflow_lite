@@ -39,15 +39,18 @@ def list_users(
     List all users (admin only).
     Can filter by role to get doctors for appointments dropdown.
     """
+    print(f"[DEBUG] list_users called by user: {current_user.username}, role: {current_user.role}")
+
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Only admins can list users")
-    
+
     query = db.query(User)
-    
+
     if role:
         query = query.filter(User.role == role)
-    
+
     users = query.offset(skip).limit(limit).all()
+    print(f"[DEBUG] Returning {len(users)} users")
     return users
 
 

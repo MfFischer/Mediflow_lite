@@ -92,12 +92,12 @@ export default function Layout({ children }: LayoutProps) {
           {/* User section */}
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center space-x-3 px-4 py-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                {user?.username?.charAt(0).toUpperCase()}
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold" suppressHydrationWarning>
+                {user?.username?.charAt(0).toUpperCase() || 'A'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.username}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                <p className="text-sm font-medium text-gray-900 truncate" suppressHydrationWarning>{user?.username || 'Admin'}</p>
+                <p className="text-xs text-gray-500 capitalize" suppressHydrationWarning>{user?.role || 'admin'}</p>
               </div>
             </div>
             <button
