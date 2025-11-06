@@ -425,24 +425,24 @@ export default function InvoiceModal({ isOpen, onClose, onSuccess, invoice }: In
                 <span className="font-semibold">₱{calculateSubtotal().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-700">
-                <span>Tax ({formData.tax_rate}%):</span>
+                <span>Tax ({formData.tax_rate || 0}%):</span>
                 <span className="font-semibold">₱{calculateTax().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-gray-700">
                 <span>Discount:</span>
-                <span className="font-semibold">-₱{formData.discount_amount.toFixed(2)}</span>
+                <span className="font-semibold">-₱{(formData.discount_amount || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-green-700 bg-green-50 px-3 py-2 rounded-lg">
                 <span>PhilHealth Coverage:</span>
-                <span className="font-semibold">-₱{formData.philhealth_coverage.toFixed(2)}</span>
+                <span className="font-semibold">-₱{(formData.philhealth_coverage || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-green-700 bg-green-50 px-3 py-2 rounded-lg">
                 <span>HMO Coverage:</span>
-                <span className="font-semibold">-₱{formData.hmo_coverage.toFixed(2)}</span>
+                <span className="font-semibold">-₱{(formData.hmo_coverage || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-green-700 bg-green-50 px-3 py-2 rounded-lg">
                 <span>Senior/PWD Discount:</span>
-                <span className="font-semibold">-₱{formData.senior_pwd_discount.toFixed(2)}</span>
+                <span className="font-semibold">-₱{(formData.senior_pwd_discount || 0).toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-blue-900 pt-2 border-t-2 border-blue-300 bg-blue-50 px-3 py-2 rounded-lg">
                 <span>Patient Balance:</span>
