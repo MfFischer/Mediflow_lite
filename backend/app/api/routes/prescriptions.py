@@ -2,6 +2,7 @@
 E-Prescription API routes.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional
@@ -255,3 +256,60 @@ async def dispense_prescription(
     
     return prescription
 
+
+@router.get("/{prescription_id}/pdf")
+async def generate_prescription_pdf_endpoint(
+    prescription_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Generate a PDF for a prescription."""
+    from app.utils.pdf_generator import generate_prescription_pdf
+
+    prescription = db.query(Prescription).filter(Prescription.id == prescription_id).first()
+
+    if not prescription:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Prescription {prescription_id} not found"
+        )
+
+    # Get patient and doctor info
+    patient = db.query(Patient).filter(Patient.id == prescription.patient_id).first()
+    doctor = db.query(User).filter(User.id == prescription.doctor_id).first()
+
+    # Prepare data for PDF
+    pdf_data = {
+        'prescription_number': prescription.prescription_number,
+        'patient_name': f"{patient.first_name} {patient.last_name}" if patient else "Unknown",
+        'doctor_name': doctor.username if doctor else "Unknown",
+        'diagnosis': prescription.diagnosis,
+        'notes': prescription.notes,
+        'medications': [
+            {
+                'medication_name': med.medication_name,
+                'dosage': med.dosage,
+                'frequency': med.frequency,
+                'duration': med.duration,
+                'instructions': med.instructions
+            }
+            for med in prescription.medications
+        ]
+    }
+
+    # Generate PDF
+    pdf_buffer = generate_prescription_pdf(pdf_data)
+
+    # Log audit event
+    log_audit_event(
+        db,
+        "PRESCRIPTION_PDF_GENERATED",
+        current_user.id,
+        f"Generated PDF for prescription {prescription.prescription_number}"
+    )
+
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=prescription_{prescription_id}.pdf"}
+    )

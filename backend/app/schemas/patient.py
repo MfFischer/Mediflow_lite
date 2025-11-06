@@ -29,6 +29,14 @@ class PatientBase(BaseModel):
     insurance_number: Optional[str] = Field(None, max_length=100)
     medical_history: Optional[str] = None
 
+    # Philippine Insurance Information
+    philhealth_number: Optional[str] = Field(None, max_length=20, description="12-digit PhilHealth number")
+    philhealth_member_type: Optional[str] = Field(None, max_length=50, description="Member, Dependent, Senior Citizen, PWD")
+    hmo_provider: Optional[str] = Field(None, max_length=100, description="HMO provider name")
+    hmo_card_number: Optional[str] = Field(None, max_length=100)
+    hmo_coverage_limit: Optional[str] = Field(None, max_length=50, description="e.g., ₱100,000")
+    hmo_validity_date: Optional[date] = None
+
     @validator('date_of_birth')
     def validate_date_of_birth(cls, v):
         """Validate that date of birth is not in the future."""
@@ -54,6 +62,14 @@ class PatientUpdate(BaseModel):
     ssn: Optional[str] = Field(None, max_length=20)
     insurance_number: Optional[str] = Field(None, max_length=100)
     medical_history: Optional[str] = None
+
+    # Philippine Insurance Information
+    philhealth_number: Optional[str] = Field(None, max_length=20)
+    philhealth_member_type: Optional[str] = Field(None, max_length=50)
+    hmo_provider: Optional[str] = Field(None, max_length=100)
+    hmo_card_number: Optional[str] = Field(None, max_length=100)
+    hmo_coverage_limit: Optional[str] = Field(None, max_length=50)
+    hmo_validity_date: Optional[date] = None
 
     @validator('date_of_birth')
     def validate_date_of_birth(cls, v):

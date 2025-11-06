@@ -15,10 +15,15 @@ export interface User {
 
 export const login = async (username: string, password: string): Promise<boolean> => {
   try {
+    console.log('Attempting login for user:', username)
+    console.log('API baseURL:', process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000')
+
     const response = await api.post<LoginResponse>('/api/v1/auth/login', {
       username,
       password,
     })
+
+    console.log('Login response received:', response.status)
 
     const { access_token, refresh_token } = response.data
     setItem('access_token', access_token)
@@ -28,9 +33,12 @@ export const login = async (username: string, password: string): Promise<boolean
     const userResponse = await api.get<User>('/api/v1/auth/me')
     setItem('user', JSON.stringify(userResponse.data))
 
+    console.log('Login successful!')
     return true
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login failed:', error)
+    console.error('Error response:', error.response?.data)
+    console.error('Error status:', error.response?.status)
     return false
   }
 }

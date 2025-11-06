@@ -26,11 +26,25 @@ class PaymentMethod(str, Enum):
     OTHER = "other"
 
 
+class ItemCategory(str, Enum):
+    """Invoice item category for Philippine hospitals."""
+    PROFESSIONAL_FEE = "professional_fee"
+    LABORATORY = "laboratory"
+    MEDICATION = "medication"
+    ROOM_CHARGE = "room_charge"
+    PROCEDURE = "procedure"
+    SUPPLIES = "supplies"
+    OTHER = "other"
+
+
 class InvoiceItemBase(BaseModel):
     """Base invoice item schema."""
     description: str = Field(..., min_length=3, max_length=500)
+    category: ItemCategory = Field(default=ItemCategory.OTHER)
     quantity: int = Field(..., ge=1)
     unit_price: float = Field(..., ge=0)
+    doctor_name: Optional[str] = Field(None, max_length=200, description="For professional fees")
+    doctor_license: Optional[str] = Field(None, max_length=50, description="PRC License Number")
 
 
 class InvoiceItemCreate(InvoiceItemBase):
@@ -63,6 +77,11 @@ class InvoiceCreate(InvoiceBase):
     tax_rate: float = Field(default=0.0, ge=0, le=1, description="Tax rate (0-1)")
     discount_amount: float = Field(default=0.0, ge=0, description="Discount amount")
 
+    # Philippine Insurance Coverage
+    philhealth_coverage: float = Field(default=0.0, ge=0, description="PhilHealth coverage amount")
+    hmo_coverage: float = Field(default=0.0, ge=0, description="HMO coverage amount")
+    senior_pwd_discount: float = Field(default=0.0, ge=0, description="Senior Citizen/PWD 20% discount")
+
 
 class InvoiceUpdate(BaseModel):
     """Schema for updating an invoice."""
@@ -80,7 +99,11 @@ class InvoiceResponse(InvoiceBase):
     subtotal: float
     tax_amount: float
     discount_amount: float
+    philhealth_coverage: float
+    hmo_coverage: float
+    senior_pwd_discount: float
     total_amount: float
+    patient_balance: float
     status: InvoiceStatus
     payment_method: Optional[PaymentMethod]
     payment_date: Optional[datetime]

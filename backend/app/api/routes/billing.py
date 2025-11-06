@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from typing import Optional
@@ -266,6 +267,66 @@ async def record_payment(
     return invoice
 
 
+@router.get("/{invoice_id}/pdf")
+async def generate_invoice_pdf_endpoint(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Generate a PDF for an invoice."""
+    from app.utils.pdf_generator import generate_invoice_pdf
+
+    invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invoice {invoice_id} not found"
+        )
+
+    # Get patient info
+    patient = db.query(Patient).filter(Patient.id == invoice.patient_id).first()
+
+    # Prepare data for PDF
+    pdf_data = {
+        'invoice_number': invoice.invoice_number,
+        'due_date': invoice.due_date.strftime('%B %d, %Y') if invoice.due_date else 'N/A',
+        'patient_name': f"{patient.first_name} {patient.last_name}" if patient else "Unknown",
+        'status': invoice.status.value if invoice.status else 'pending',
+        'subtotal': float(invoice.subtotal),
+        'tax_amount': float(invoice.tax_amount),
+        'discount_amount': float(invoice.discount_amount),
+        'total_amount': float(invoice.total_amount),
+        'payment_date': invoice.payment_date.strftime('%B %d, %Y') if invoice.payment_date else None,
+        'payment_method': invoice.payment_method.value if invoice.payment_method else None,
+        'notes': invoice.notes,
+        'items': [
+            {
+                'description': item.description,
+                'quantity': item.quantity,
+                'unit_price': float(item.unit_price),
+                'amount': float(item.amount)
+            }
+            for item in invoice.items
+        ]
+    }
+
+    # Generate PDF
+    pdf_buffer = generate_invoice_pdf(pdf_data)
+
+    # Log audit event
+    log_audit_event(
+        db,
+        "INVOICE_PDF_GENERATED",
+        current_user.id,
+        f"Generated PDF for invoice {invoice.invoice_number}"
+    )
+
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=invoice_{invoice_id}.pdf"}
+    )
 
 
 @router.get("/summary/stats", response_model=InvoiceSummary)

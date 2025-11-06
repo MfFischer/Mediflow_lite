@@ -2,6 +2,7 @@
 Lab Results API routes.
 """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional
@@ -263,3 +264,64 @@ async def review_lab_result(
     
     return lab_result
 
+
+@router.get("/{result_id}/pdf")
+async def generate_lab_result_pdf_endpoint(
+    result_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Generate a PDF for a lab result."""
+    from app.utils.pdf_generator import generate_lab_result_pdf
+
+    lab_result = db.query(LabResult).filter(LabResult.id == result_id).first()
+
+    if not lab_result:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Lab result {result_id} not found"
+        )
+
+    # Get patient and doctor info
+    patient = db.query(Patient).filter(Patient.id == lab_result.patient_id).first()
+    doctor = db.query(User).filter(User.id == lab_result.doctor_id).first()
+
+    # Prepare data for PDF
+    pdf_data = {
+        'result_number': lab_result.result_number,
+        'test_date': lab_result.test_date.strftime('%B %d, %Y') if lab_result.test_date else 'N/A',
+        'result_date': lab_result.result_date.strftime('%B %d, %Y') if lab_result.result_date else 'N/A',
+        'patient_name': f"{patient.first_name} {patient.last_name}" if patient else "Unknown",
+        'doctor_name': doctor.username if doctor else "Unknown",
+        'test_name': lab_result.test_name,
+        'test_category': lab_result.test_category,
+        'status': lab_result.status.value if lab_result.status else 'pending',
+        'notes': lab_result.notes,
+        'doctor_comments': lab_result.doctor_comments,
+        'test_values': [
+            {
+                'parameter_name': val.parameter_name,
+                'value': val.value,
+                'reference_range': val.reference_range,
+                'unit': val.unit
+            }
+            for val in lab_result.test_values
+        ]
+    }
+
+    # Generate PDF
+    pdf_buffer = generate_lab_result_pdf(pdf_data)
+
+    # Log audit event
+    log_audit_event(
+        db,
+        "LAB_RESULT_PDF_GENERATED",
+        current_user.id,
+        f"Generated PDF for lab result {lab_result.result_number}"
+    )
+
+    return StreamingResponse(
+        pdf_buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=lab_result_{result_id}.pdf"}
+    )

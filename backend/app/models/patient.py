@@ -27,8 +27,16 @@ class Patient(Base):
 
     # Medical information (encrypted fields)
     ssn = Column(String(255), nullable=True)  # Encrypted
-    insurance_number = Column(String(255), nullable=True)  # Encrypted
+    insurance_number = Column(String(255), nullable=True)  # Encrypted - Legacy field
     medical_history = Column(Text, nullable=True)  # Encrypted
+
+    # Philippine Insurance Information
+    philhealth_number = Column(String(20), nullable=True)  # 12-digit PhilHealth number
+    philhealth_member_type = Column(String(50), nullable=True)  # Member, Dependent, Senior Citizen, PWD
+    hmo_provider = Column(String(100), nullable=True)  # Maxicare, Medicard, Intellicare, etc.
+    hmo_card_number = Column(String(100), nullable=True)
+    hmo_coverage_limit = Column(String(50), nullable=True)  # e.g., "₱100,000"
+    hmo_validity_date = Column(Date, nullable=True)
 
     # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)

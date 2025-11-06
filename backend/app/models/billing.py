@@ -41,7 +41,14 @@ class Invoice(Base):
     subtotal = Column(Float, nullable=False, default=0.0)
     tax_amount = Column(Float, nullable=False, default=0.0)
     discount_amount = Column(Float, nullable=False, default=0.0)
+
+    # Philippine Insurance Coverage
+    philhealth_coverage = Column(Float, nullable=False, default=0.0)
+    hmo_coverage = Column(Float, nullable=False, default=0.0)
+    senior_pwd_discount = Column(Float, nullable=False, default=0.0)  # 20% discount for Senior/PWD
+
     total_amount = Column(Float, nullable=False, default=0.0)
+    patient_balance = Column(Float, nullable=False, default=0.0)  # Amount patient needs to pay
     
     # Payment details
     status = Column(SQLEnum(InvoiceStatus), default=InvoiceStatus.DRAFT, nullable=False)
@@ -60,20 +67,36 @@ class Invoice(Base):
     items = relationship("InvoiceItem", back_populates="invoice", cascade="all, delete-orphan")
 
 
+class ItemCategory(str, enum.Enum):
+    """Invoice item category for Philippine hospitals."""
+    PROFESSIONAL_FEE = "professional_fee"  # Doctor's fee
+    LABORATORY = "laboratory"  # Lab tests
+    MEDICATION = "medication"  # Medicines
+    ROOM_CHARGE = "room_charge"  # Hospital room
+    PROCEDURE = "procedure"  # Medical procedures
+    SUPPLIES = "supplies"  # Medical supplies
+    OTHER = "other"
+
+
 class InvoiceItem(Base):
     """Individual line items in an invoice."""
     __tablename__ = "invoice_items"
 
     id = Column(Integer, primary_key=True, index=True)
     invoice_id = Column(Integer, ForeignKey("invoices.id"), nullable=False)
-    
+
     description = Column(String(500), nullable=False)
+    category = Column(SQLEnum(ItemCategory), default=ItemCategory.OTHER, nullable=False)
     quantity = Column(Integer, nullable=False, default=1)
     unit_price = Column(Float, nullable=False)
     total_price = Column(Float, nullable=False)
-    
+
+    # For professional fees - link to doctor
+    doctor_name = Column(String(200), nullable=True)
+    doctor_license = Column(String(50), nullable=True)  # PRC License Number
+
     created_at = Column(DateTime, default=datetime.utcnow)
-    
+
     # Relationships
     invoice = relationship("Invoice", back_populates="items")
 
