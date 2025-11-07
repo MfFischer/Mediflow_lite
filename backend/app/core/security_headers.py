@@ -58,10 +58,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # HSTS (HTTP Strict Transport Security) - only in production with HTTPS
         if settings.is_production:
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-        
-        # Remove server header
-        response.headers.pop("Server", None)
-        
+
+        # Remove server header (use del instead of pop for MutableHeaders)
+        if "Server" in response.headers:
+            del response.headers["Server"]
+
         return response
 
 

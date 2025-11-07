@@ -7,7 +7,8 @@ import time
 
 from app.core.config import settings
 from app.core.database import init_db
-from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results, hospital_settings, users
+from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results, hospital_settings, users, financial
+from app.core.security_headers import SecurityHeadersMiddleware
 
 # Configure logging
 logging.basicConfig(
@@ -40,6 +41,9 @@ if settings.is_production:
         TrustedHostMiddleware,
         allowed_hosts=["*.mediflow.com", "mediflow.com"]
     )
+
+# Security headers middleware
+app.add_middleware(SecurityHeadersMiddleware)
 
 
 # Request timing middleware
@@ -106,6 +110,7 @@ app.include_router(users.router, prefix=f"{settings.api_v1_prefix}/users", tags=
 app.include_router(patients.router, prefix=f"{settings.api_v1_prefix}/patients", tags=["Patients"])
 app.include_router(appointments.router, prefix=f"{settings.api_v1_prefix}/appointments", tags=["Appointments"])
 app.include_router(billing.router, prefix=f"{settings.api_v1_prefix}/billing", tags=["Billing"])
+app.include_router(financial.router, prefix=f"{settings.api_v1_prefix}/financial", tags=["Financial Management"])
 app.include_router(prescriptions.router, prefix=f"{settings.api_v1_prefix}/prescriptions", tags=["E-Prescriptions"])
 app.include_router(lab_results.router, prefix=f"{settings.api_v1_prefix}/lab-results", tags=["Lab Results"])
 app.include_router(hospital_settings.router, prefix=f"{settings.api_v1_prefix}/hospital-settings", tags=["Hospital Settings"])
