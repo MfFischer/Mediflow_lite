@@ -26,6 +26,13 @@ MediFlow Lite is a comprehensive, commercial-grade healthcare management system 
 - **Prescriptions** - Digital prescription generation with medication tracking
 - **Lab Results** - Laboratory test management with multiple test values
 - **Billing & Invoicing** - Professional invoices with insurance coverage calculation
+- **💰 Financial Management** - Complete accounting system (NEW!)
+  - Revenue tracking and reporting
+  - Expense management
+  - Doctor payout automation
+  - Accounts receivable tracking
+  - BIR-compliant reports
+  - Inventory management
 - **Dashboard & Analytics** - Real-time insights and statistics
 
 ### 🔒 Security & Compliance
@@ -187,6 +194,64 @@ Supported HMO providers:
   - HMO coverage
   - Senior Citizen/PWD discount (20%)
   - Patient balance calculation
+
+---
+
+## 💰 Financial Management System (NEW!)
+
+MediFlow Lite now includes a **complete financial management system** - no need for separate accounting software!
+
+### Revenue Tracking
+- **Real-time Revenue Dashboard** - See daily, monthly, and yearly revenue
+- **Payment Method Analysis** - Cash, card, insurance, bank transfer breakdown
+- **Category Breakdown** - Revenue by department (professional fees, lab, pharmacy, etc.)
+- **Insurance Coverage Tracking** - PhilHealth, HMO, and SC/PWD discount monitoring
+
+### Expense Management
+- **Comprehensive Expense Tracking** - All business expenses in one place
+- **Category-wise Analysis** - Pharmacy, salaries, utilities, rent, equipment, etc.
+- **Vendor Management** - Track suppliers with TIN numbers
+- **BIR Compliance** - VAT tracking and receipt management
+
+### Doctor Payout Automation
+- **Professional Fee Tracking** - Automatic calculation of doctor earnings
+- **Withholding Tax** - Automatic 10% withholding tax calculation
+- **Payout Reports** - Generate payout summaries by period
+- **Payment Status** - Track pending, approved, and paid payouts
+
+### Profitability Analysis
+- **Gross Profit Calculation** - Revenue minus expenses
+- **Profit Margin** - Percentage-based profitability tracking
+- **Department Profitability** - See which departments are most profitable
+- **Trend Analysis** - Track financial performance over time
+
+### Accounts Receivable
+- **Outstanding Balances** - Track unpaid patient invoices
+- **Aging Reports** - Pending vs. overdue invoices
+- **Collection Tracking** - Monitor payment collection efficiency
+
+### Inventory Management
+- **Stock Tracking** - Pharmacy and medical supplies inventory
+- **Reorder Alerts** - Low stock notifications
+- **Cost Analysis** - Purchase price vs. selling price tracking
+- **Expiry Management** - Track expiration dates
+
+### BIR Compliance
+- **Sales Summary Reports** - Total sales by period
+- **VAT Reports** - VAT-inclusive vs. VAT-exempt tracking
+- **Withholding Tax Reports** - For doctor professional fees
+- **Official Receipt Tracking** - BIR-compliant receipt numbering
+
+### Financial Dashboard Features
+- 📊 **Key Metrics Cards** - Revenue, expenses, profit, receivables at a glance
+- 📈 **Visual Charts** - Payment methods and category breakdowns
+- 👨‍⚕️ **Doctor Earnings Table** - Detailed professional fee breakdown
+- 🏥 **Insurance Coverage** - PhilHealth, HMO, and discount tracking
+- 📅 **Date Range Filters** - View any period (daily, monthly, yearly)
+
+**Access the Financial Dashboard at:** `/financial-dashboard`
+
+For complete documentation, see [Financial Management Guide](FINANCIAL_MANAGEMENT_GUIDE.md)
 
 ---
 
