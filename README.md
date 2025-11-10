@@ -26,21 +26,34 @@ MediFlow Lite is a comprehensive, commercial-grade healthcare management system 
 - **Prescriptions** - Digital prescription generation with medication tracking
 - **Lab Results** - Laboratory test management with multiple test values
 - **Billing & Invoicing** - Professional invoices with insurance coverage calculation
-- **💰 Financial Management** - Complete accounting system (NEW!)
+- **💰 Financial Management** - Complete accounting system
   - Revenue tracking and reporting
   - Expense management
   - Doctor payout automation
   - Accounts receivable tracking
   - BIR-compliant reports
   - Inventory management
+- **🤖 AI Assistant** - Intelligent database queries with offline support (NEW!)
+  - Natural language database queries
+  - Works online (OpenAI) AND offline (local Phi-3)
+  - Auto-fallback when internet fails
+  - Database-focused (patients, doctors, appointments, financials)
+  - Rejects generic medical questions
+  - Perfect for Philippine hospitals with unreliable internet
 - **Dashboard & Analytics** - Real-time insights and statistics
 
 ### 🔒 Security & Compliance
 - **JWT Authentication** - Secure access and refresh token system
-- **Role-Based Access Control** - Admin, Doctor, and Receptionist roles
+- **Role-Based Access Control (RBAC)** - 7 roles with granular permissions
+  - Admin, Doctor, Nurse, Receptionist, Accountant, Pharmacist, Lab Technician
+  - 15+ granular permissions (patient:create, billing:read, etc.)
+  - Account lockout after failed login attempts
+  - Password expiry tracking
+- **Input Validation & Sanitization** - XSS and SQL injection prevention
 - **Data Encryption** - Sensitive medical data encryption
 - **Audit Logging** - Complete audit trail for all operations
 - **GDPR Compliant** - Privacy-first design
+- **Environment Variables** - Secure secrets management
 
 ### 💼 Commercial-Grade Features
 - **PDF Generation** - Professional prescription and invoice PDFs

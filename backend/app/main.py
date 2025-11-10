@@ -9,12 +9,11 @@ from app.core.config import settings
 from app.core.database import init_db
 from app.api.routes import auth, patients, appointments, billing, ai, gdpr, prescriptions, lab_results, hospital_settings, users, financial, ai_chat
 from app.core.security_headers import SecurityHeadersMiddleware
+from app.middleware.request_tracking import RequestTrackingMiddleware
+from app.core.logging_config import setup_logging
 
-# Configure logging
-logging.basicConfig(
-    level=getattr(logging, settings.log_level),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+# Configure structured logging
+setup_logging(log_level=settings.log_level)
 logger = logging.getLogger(__name__)
 
 # Create FastAPI application
@@ -45,8 +44,11 @@ if settings.is_production:
 # Security headers middleware
 app.add_middleware(SecurityHeadersMiddleware)
 
+# Request tracking middleware (with request ID and structured logging)
+app.add_middleware(RequestTrackingMiddleware)
 
-# Request timing middleware
+
+# Request timing middleware (legacy - can be removed as RequestTrackingMiddleware handles this)
 @app.middleware("http")
 async def add_process_time_header(request: Request, call_next):
     start_time = time.time()
