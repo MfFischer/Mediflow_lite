@@ -25,6 +25,11 @@ sendgrid==6.11.0
 
 # AI Integration
 google-generativeai==0.3.2
+openai==1.12.0
+llama-cpp-python==0.2.55  # For local Phi-3 model (offline mode)
+
+# Input Sanitization
+bleach==6.1.0
 
 # Utilities
 python-dateutil==2.8.2

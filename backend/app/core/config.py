@@ -50,6 +50,22 @@ class Settings(BaseSettings):
     # Gemini AI
     gemini_api_key: Optional[str] = None
 
+    # AI Assistant Configuration
+    openai_api_key: Optional[str] = None
+    openai_model: str = "gpt-4o-mini"
+    openai_max_tokens: int = 2000
+
+    # Local LLM (offline fallback)
+    local_llm_enabled: bool = True
+    local_llm_model_path: str = "./models/phi-3-mini-4k-instruct.gguf"
+    local_llm_context_size: int = 4096
+    local_llm_threads: int = 4
+
+    # AI Settings
+    ai_fallback_to_local: bool = True
+    ai_max_context_messages: int = 10
+    ai_temperature: float = 0.1
+
     # File Upload
     max_upload_size_mb: int = 10
     upload_dir: str = "./uploads"
@@ -60,6 +76,15 @@ class Settings(BaseSettings):
     # Compliance
     data_retention_days: int = 2555  # 7 years for medical records
     enable_audit_log: bool = True
+
+    # Password Policy
+    password_min_length: int = 8
+    password_require_uppercase: bool = True
+    password_require_lowercase: bool = True
+    password_require_digit: bool = True
+    password_require_special: bool = True
+    max_login_attempts: int = 5
+    account_lockout_minutes: int = 30
 
     @property
     def is_production(self) -> bool:
