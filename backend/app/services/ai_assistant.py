@@ -14,7 +14,7 @@ from ..core.config import settings
 from ..models.patient import Patient
 from ..models.appointment import Appointment
 from ..models.user import User
-from ..models.billing import Billing
+from ..models.billing import Invoice
 from ..models.financial import Payment, Expense, DoctorPayout
 
 
@@ -94,9 +94,9 @@ class DatabaseQueryTools:
         ).order_by(Appointment.appointment_date.desc()).limit(10).all()
         
         # Get billing history
-        billings = self.db.query(Billing).filter(
-            Billing.patient_id == patient.id
-        ).order_by(Billing.created_at.desc()).limit(10).all()
+        billings = self.db.query(Invoice).filter(
+            Invoice.patient_id == patient.id
+        ).order_by(Invoice.created_at.desc()).limit(10).all()
         
         return {
             "patient_info": {
