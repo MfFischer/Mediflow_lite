@@ -122,3 +122,8 @@ backend/models/*.gguf
 backend/models/*.bin
 backend/models/*.safetensors
 
+# Documentation (keep locally for cleaner repo)
+*_TESTING_GUIDE.md
+*_IMPLEMENTATION.md
+*_ROADMAP.md
+
