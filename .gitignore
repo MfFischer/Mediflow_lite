@@ -117,3 +117,8 @@ build/
 *.swo
 .~lock.*
 
+# AI Models (large files - download separately)
+backend/models/*.gguf
+backend/models/*.bin
+backend/models/*.safetensors
+
